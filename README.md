@@ -51,6 +51,7 @@ or call the POST endpoints correctly
 
 docker run -p 5450:5432 --name postgres-container -e POSTGRES_PASSWORD=cashew --restart unless-stopped -d postgres
 
+
 ## creating tables in sql
 
 ```
