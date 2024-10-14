@@ -1,4 +1,3 @@
-
 CREATE TABLE workspaces (
     id SERIAL PRIMARY KEY,           -- Unique ID for each workspace
     business_id INT NOT NULL REFERENCES users(id),  -- Foreign key referencing the business (user) who owns the workspace

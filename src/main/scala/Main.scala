@@ -19,7 +19,7 @@ object Main extends IOApp {
       xa <- HikariTransactor.newHikariTransactor[F](
         driverClassName = "org.postgresql.Driver",
         url = "jdbc:postgresql://localhost:5450/bookingdb",
-        user = "cashew_user",
+        user = "postgres",
         pass = "cashew",
         connectEC = ce // Connect execution context
       )
