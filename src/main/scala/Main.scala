@@ -33,7 +33,7 @@ object Main extends IOApp {
       val bookingService = new BookingServiceImpl[IO](bookingRepository)
 
       // Define the HTTP app with the routes
-      val httpApp = DeskController.deskRoutes(bookingService).orNotFound
+      val httpApp = BookingController.deskRoutes(bookingService).orNotFound
 
       val server = EmberServerBuilder
         .default[IO]

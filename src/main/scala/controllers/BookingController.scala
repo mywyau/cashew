@@ -3,14 +3,13 @@ package controllers
 import cats.effect.IO
 import io.circe.generic.auto._
 import io.circe.syntax._
-import models.BookingRequest
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.dsl.io._
 import services.BookingService
 
-object DeskController {
+object BookingController {
   def deskRoutes(bookingService: BookingService[IO]): HttpRoutes[IO] =
     HttpRoutes.of[IO] {
       case GET -> Root / "desks" / "available" =>
