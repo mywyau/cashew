@@ -4,8 +4,11 @@ import java.time.{LocalDate, LocalDateTime}
 
 
 sealed trait BookingStatus
+
 case object Pending extends BookingStatus
+
 case object Confirmed extends BookingStatus
+
 case object Cancelled extends BookingStatus
 
 
