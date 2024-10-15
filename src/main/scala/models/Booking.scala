@@ -12,10 +12,10 @@ case object Confirmed extends BookingStatus
 case object Cancelled extends BookingStatus
 
 
-case class Bookings(
-                     id: String,
-                     user_id: String,
-                     workspace_id: String,
+case class Booking(
+                     id: Option[Int],
+                     user_id: Int,
+                     workspace_id: Int,
                      booking_date: LocalDate,
                      start_time: LocalDateTime,
                      end_time: LocalDateTime,
