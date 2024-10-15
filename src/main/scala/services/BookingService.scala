@@ -2,7 +2,7 @@ package services
 
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.{EitherT, ValidatedNel}
-import cats.effect.Sync
+import cats.effect.{Concurrent, Sync}
 import cats.implicits._
 import models.Booking
 import repositories.BookingRepository
@@ -31,7 +31,7 @@ case object BookingNotFound extends ValidationError
 
 case object OverlappingBooking extends ValidationError
 
-class BookingServiceImpl[F[_] : Sync](repository: BookingRepository[F]) extends BookingService[F] {
+class BookingServiceImpl[F[_] : Concurrent](repository: BookingRepository[F]) extends BookingService[F] {
 
   // Validation function for booking ID (example: make sure it's not empty or too short)
   def validateBookingId(bookingId: String): ValidatedNel[ValidationError, String] = {
@@ -59,7 +59,7 @@ class BookingServiceImpl[F[_] : Sync](repository: BookingRepository[F]) extends 
         case Some(booking) => Right(booking)
         case None => Left(BookingNotFound)
       }
-      case Invalid(errors) => Sync[F].pure(Left(errors.head)) // Return the first validation error
+      case Invalid(errors) => Concurrent[F].pure(Left(errors.head)) // Return the first validation error
     }
   }
 
@@ -72,13 +72,13 @@ class BookingServiceImpl[F[_] : Sync](repository: BookingRepository[F]) extends 
         for {
           isOverlapping <- repository.doesOverlap(booking)
           result <- if (isOverlapping) {
-            Sync[F].pure(Left(OverlappingBooking))
+            Concurrent[F].pure(Left(OverlappingBooking))
           } else {
             repository.setBooking(booking).map(Right(_))
           }
         } yield result
       case Invalid(errors) =>
-        Sync[F].pure(Left(errors.head)) // For simplicity, return the first error
+        Concurrent[F].pure(Left(errors.head)) // For simplicity, return the first error
     }
   }
 
@@ -93,15 +93,15 @@ class BookingServiceImpl[F[_] : Sync](repository: BookingRepository[F]) extends 
             for {
               isOverlapping <- repository.doesOverlap(updatedBooking)
               result <- if (isOverlapping) {
-                Sync[F].pure(Left(OverlappingBooking))
+                Concurrent[F].pure(Left(OverlappingBooking))
               } else {
                 repository.updateBooking(bookingId, updatedBooking).map(Right(_))
               }
             } yield result
-          case Left(error) => Sync[F].pure(Left(error))
+          case Left(error) => Concurrent[F].pure(Left(error))
         }
       case Invalid(errors) =>
-        Sync[F].pure(Left(errors.head)) // Return the first error for simplicity
+        Concurrent[F].pure(Left(errors.head)) // Return the first error for simplicity
     }
   }
 
@@ -109,7 +109,7 @@ class BookingServiceImpl[F[_] : Sync](repository: BookingRepository[F]) extends 
   def deleteBooking(bookingId: String): F[Either[ValidationError, Int]] = {
     validateBookingExists(bookingId).value.flatMap {
       case Right(_) => repository.deleteBooking(bookingId).map(Right(_))
-      case Left(error) => Sync[F].pure(Left(error))
+      case Left(error) => Concurrent[F].pure(Left(error))
     }
   }
 }

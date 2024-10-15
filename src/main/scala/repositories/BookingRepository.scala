@@ -1,6 +1,6 @@
 package repositories
 
-import cats.effect.Sync
+import cats.effect.{Concurrent, Sync}
 import cats.implicits._
 import doobie._
 import doobie.implicits._
@@ -17,7 +17,7 @@ case object InvalidBookingId extends ValidationError
 
 case object InvalidTimeRange extends ValidationError
 
-class BookingRepository[F[_] : Sync](transactor: Transactor[F]) {
+class BookingRepository[F[_] : Concurrent](transactor: Transactor[F]) {
 
   // Meta instance to map between LocalDateTime and Timestamp
   implicit val localDateTimeMeta: Meta[LocalDateTime] =
@@ -103,7 +103,7 @@ class BookingRepository[F[_] : Sync](transactor: Transactor[F]) {
   def setBookingsWithOverlapCheck(booking: Booking): F[Either[String, Int]] = {
     doesOverlap(booking).flatMap { overlap =>
       if (overlap) {
-        Sync[F].pure(Left("Booking overlaps with an existing booking"))
+        Concurrent[F].pure(Left("Booking overlaps with an existing booking"))
       } else {
         sql"""
         INSERT INTO bookings (user_id, workspace_id, booking_date, start_time, end_time, status, created_at)
