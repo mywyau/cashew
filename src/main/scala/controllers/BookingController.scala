@@ -1,67 +1,60 @@
 package controllers
 
-import cats.effect.IO
+import cats.effect.{Concurrent, Sync}
+import org.http4s._
+import org.http4s.dsl.Http4sDsl
+import org.http4s.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
-import org.http4s.HttpRoutes
-import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
-import org.http4s.circe.CirceEntityDecoder._
-import org.http4s.dsl.io._
-import services.BookingService
+import models.Booking
+import services._
+import cats.implicits._
 
-object BookingController {
-  def deskRoutes(bookingService: BookingService[IO]): HttpRoutes[IO] =
-    HttpRoutes.of[IO] {
-      case GET -> Root / "desks" / "available" =>
-        for {
-          desks <- bookingService.getAvailableDesks
-          resp <- Ok(desks.toString) // Implement proper response
-        } yield resp
+class BookingController[F[_]: Concurrent](bookingService: BookingService[F]) extends Http4sDsl[F] {
 
-      case GET -> Root / "desk" / id =>
-        for {
-          deskOpt <- bookingService.getDeskById(id) // Fetch desk by ID
-          resp <- deskOpt match {
-            case Some(desk) => Ok(desk) // Automatically serialized to JSON
-            case None => NotFound(s"No desk found with id: $id")
-          }
-        } yield resp
+  // Create or get JSON decoder/encoder for Booking object (if needed)
+  implicit val bookingDecoder: EntityDecoder[F, Booking] = jsonOf[F, Booking]
 
-      case GET -> Root / "desks" =>
-        for {
-          desks <- bookingService.getAvailableDesks
-          resp <- Ok(desks.toString) // Implement proper response
-        } yield resp
+  // Define routes for the Booking Controller
+  val routes: HttpRoutes[F] = HttpRoutes.of[F] {
+    // Find booking by ID
+    case GET -> Root / "bookings" / bookingId =>
+      bookingService.findBookingById(bookingId).flatMap {
+        case Right(booking) => Ok(booking.asJson)
+        case Left(BookingNotFound) => NotFound("Booking not found")
+        case Left(InvalidBookingId) => BadRequest("Invalid booking ID")
+        case _ => InternalServerError("An error occurred")
+      }
 
-      case req@POST -> Root / "desk" / "book" =>
-        req.attemptAs[BookingRequest].value.flatMap {
-          case Left(err) =>
-            // Handle deserialization errors
-            BadRequest(s"Invalid request body: ${err.getMessage}")
-
-          case Right(bookingData) =>
-            // Log the booking data (if needed)
-            println(bookingData)
-
-            // Call the booking service
-            bookingService.bookDesk(
-              userId = bookingData.userId,
-              deskId = bookingData.deskId,
-              roomId = bookingData.roomId,
-              startTime = bookingData.startTime,
-              endTime = bookingData.endTime
-            ).flatMap {
-              case Right(booking) =>
-                // Return the booking in a proper JSON response
-                Ok(booking.asJson)
-
-              case Left(error) =>
-                // Return a Conflict response with error message
-                Conflict(Map("error" -> error.getMessage).asJson)
-            }.handleErrorWith { err =>
-              // Catch unexpected errors (such as database issues) and return a 500
-              InternalServerError(s"Something went wrong: ${err.getMessage}")
-            }
+    // Create a new booking
+    case req @ POST -> Root / "bookings" =>
+      req.decode[Booking] { booking =>
+        bookingService.createBooking(booking).flatMap {
+          case Right(_) => Created("Booking created successfully")
+          case Left(InvalidTimeRange) => BadRequest("Invalid time range")
+          case Left(OverlappingBooking) => Conflict("Booking overlaps with another booking")
+          case _ => InternalServerError("An error occurred")
         }
-    }
+      }
+
+    // Update an existing booking by ID
+    case req @ PUT -> Root / "bookings" / bookingId =>
+      req.decode[Booking] { updatedBooking =>
+        bookingService.updateBooking(bookingId, updatedBooking).flatMap {
+          case Right(_) => Ok("Booking updated successfully")
+          case Left(BookingNotFound) => NotFound("Booking not found")
+          case Left(InvalidTimeRange) => BadRequest("Invalid time range")
+          case Left(OverlappingBooking) => Conflict("Booking overlaps with another booking")
+          case _ => InternalServerError("An error occurred")
+        }
+      }
+
+    // Delete a booking by ID
+    case DELETE -> Root / "bookings" / bookingId =>
+      bookingService.deleteBooking(bookingId).flatMap {
+        case Right(_) => Ok("Booking deleted successfully")
+        case Left(BookingNotFound) => NotFound("Booking not found")
+        case _ => InternalServerError("An error occurred")
+      }
+  }
 }

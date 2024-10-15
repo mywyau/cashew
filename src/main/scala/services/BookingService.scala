@@ -12,7 +12,7 @@ import java.time.LocalDateTime
 
 trait BookingService[F[_]] {
 
-  def findBookingById(bookingId: String): F[Either[ValidationError, Int]]
+  def findBookingById(bookingId: String): F[Either[ValidationError, Booking]]
 
   def createBooking(booking: Booking): F[Either[ValidationError, Int]]
 
@@ -50,16 +50,16 @@ class BookingServiceImpl[F[_] : Sync](repository: BookingRepository[F]) extends 
     EitherT.fromOptionF(repository.findBookingById(bookingId), BookingNotFound)
   }
 
-  // Create booking with validations (including time range and overlap check)
-  def findBookingById(bookingId: String): F[Either[ValidationError, Int]] = {
-
+  // Find booking by ID with validation
+  def findBookingById(bookingId: String): F[Either[ValidationError, Booking]] = {
     val validation = validateBookingId(bookingId)
 
     validation match {
-      case Valid(_) =>
-        repository.findBookingById(bookingId).map(Right(_))
-      case Invalid(errors) =>
-        Sync[F].pure(Left(errors.head)) // For simplicity, return the first error
+      case Valid(_) => repository.findBookingById(bookingId).map {
+        case Some(booking) => Right(booking)
+        case None => Left(BookingNotFound)
+      }
+      case Invalid(errors) => Sync[F].pure(Left(errors.head)) // Return the first validation error
     }
   }
 

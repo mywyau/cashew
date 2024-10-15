@@ -1,20 +1,20 @@
 package repositories
 
 import cats.effect.Sync
+import cats.implicits._
 import doobie._
 import doobie.implicits._
 import doobie.implicits.javasql._
 import doobie.util.meta.Meta
 import models._
 
-import java.sql.Timestamp
-import java.time.LocalDateTime
-
-import cats.data.ValidatedNel
-import cats.implicits._
+import java.sql.{Date, Timestamp}
+import java.time.{LocalDate, LocalDateTime}
 
 sealed trait ValidationError
+
 case object InvalidBookingId extends ValidationError
+
 case object InvalidTimeRange extends ValidationError
 
 class BookingRepository[F[_] : Sync](transactor: Transactor[F]) {
@@ -22,6 +22,21 @@ class BookingRepository[F[_] : Sync](transactor: Transactor[F]) {
   // Meta instance to map between LocalDateTime and Timestamp
   implicit val localDateTimeMeta: Meta[LocalDateTime] =
     Meta[Timestamp].imap(_.toLocalDateTime)(Timestamp.valueOf)
+
+  // Meta instance to map between LocalDate
+  implicit val localDateMeta: Meta[LocalDate] =
+    Meta[Date].imap(_.toLocalDate)(Date.valueOf)
+
+  implicit val bookingStatusMeta: Meta[BookingStatus] =
+    Meta[String].imap[BookingStatus] {
+      case "Pending" => Pending
+      case "Confirmed" => Confirmed
+      case "Cancelled" => Cancelled
+    } {
+      case Pending => "Pending"
+      case Confirmed => "Confirmed"
+      case Cancelled => "Cancelled"
+    }
 
   def findBookingById(bookingId: String): F[Option[Booking]] = {
     sql"SELECT * FROM bookings WHERE id = $bookingId"
