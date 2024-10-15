@@ -51,7 +51,6 @@ or call the POST endpoints correctly
 
 docker run -p 5450:5432 --name postgres-container -e POSTGRES_PASSWORD=cashew --restart unless-stopped -d postgres
 
-
 ## creating tables in sql
 
 ```
@@ -96,6 +95,7 @@ psql -h localhost -p 5450 -U postgres
 
 PGPASSWORD=cashew psql -h localhost -p 5450 -U postgres
 ```
+
 ALTER USER cashew_man WITH PASSWORD 'cashew';
 
 ```
@@ -104,7 +104,25 @@ CREATE USER cashew_man WITH PASSWORD 'cashew';
 
 GRANT ALL PRIVILEGES ON DATABASE postgres TO cashew_man;
 
-
 GRANT CONNECT ON DATABASE postgres-container TO cashew_man;
 GRANT USAGE ON SCHEMA public TO new_user;
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO new_user;
+
+sudo chmod -R 755 /Users/michaelyau/self_projects/cashew/cashew/migrations
+
+## Access db
+
+psql -h localhost -p 5450 -U cashew_user -d cashew_db
+cashew_password
+
+## Docker commands
+
+## Sets up docker compose environment
+```
+docker-compose up --build
+```
+
+## Clean up docker compose environment
+```
+docker-compose down
+```
