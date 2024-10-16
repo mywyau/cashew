@@ -1,7 +1,8 @@
-package repositories
+package service
 
 import cats.effect.IO
 import models._
+import repositories.BookingRepositoryAlgebra
 import services.{BookingNotFound, BookingServiceImpl}
 import weaver.SimpleIOSuite
 
