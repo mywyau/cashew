@@ -17,7 +17,22 @@ case object InvalidBookingId extends ValidationError
 
 case object InvalidTimeRange extends ValidationError
 
-class BookingRepository[F[_] : Concurrent](transactor: Transactor[F]) {
+trait BookingRepositoryAlgebra[F[_]] {
+
+  def findBookingById(bookingId: String): F[Option[Booking]]
+
+  def getAllBookings: F[List[Booking]]
+
+  def setBooking(booking: Booking): F[Int]
+
+  def updateBooking(bookingId: String, updatedBooking: Booking): F[Int]
+
+  def deleteBooking(bookingId: String): F[Int]
+
+  def doesOverlap(booking: Booking): F[Boolean]
+}
+
+class BookingRepository[F[_] : Concurrent](transactor: Transactor[F]) extends BookingRepositoryAlgebra[F] {
 
   // Meta instance to map between LocalDateTime and Timestamp
   implicit val localDateTimeMeta: Meta[LocalDateTime] =

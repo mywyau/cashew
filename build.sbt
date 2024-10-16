@@ -18,10 +18,14 @@ lazy val root = (project in file("."))
       "org.tpolecat" %% "doobie-hikari" % "1.0.0-RC4",
       "org.tpolecat" %% "doobie-postgres" % "1.0.0-RC4",
       "io.circe" %% "circe-generic" % "0.14.7",
-//      "io.circe" %% "circe-literal" % "0.14.7" % Test,
+      //      "io.circe" %% "circe-literal" % "0.14.7" % Test,
       "org.tpolecat" %% "doobie-specs2" % "1.0.0-RC4" % Test,
       "org.mockito" %% "mockito-scala" % "1.17.12" % Test,
-      "org.flywaydb" % "flyway-core" % "8.5.0"  // for easier db migrations and handling
+      "org.flywaydb" % "flyway-core" % "8.5.0", // for easier db migrations and handling
+
+      "org.scalatest" %% "scalatest" % "3.2.15" % Test,
+      "org.tpolecat" %% "doobie-scalatest" % "1.0.0-RC2" % Test, // Doobie integration with ScalaTest,
+      "com.disneystreaming" %% "weaver-cats" % "0.8.3" % Test
     )
   )
 
