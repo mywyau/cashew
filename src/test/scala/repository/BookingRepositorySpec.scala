@@ -58,22 +58,32 @@ object BookingRepositorySpec extends SimpleIOSuite {
     } yield expect(result == None)
   }
 
-  //  // Test case for updating a booking
-  //  test("update a booking") {
-  //    val mockRepository = freshRepository
-  //    val updatedBooking = sampleBooking.copy(booking_name = "Updated Booking")
-  //    for {
-  //      _ <- mockRepository.setBooking(sampleBooking)
-  //      result <- bookingService.updateBooking("booking_1", updatedBooking)
-  //    } yield expect(result == Right(1))
-  //  }
-  //
-  //  // Test case for deleting a booking
-  //  test("delete a booking") {
-  //    val mockRepository = freshRepository
-  //    for {
-  //      _ <- mockRepository.setBooking(sampleBooking)
-  //      result <- bookingService.deleteBooking("booking_1")
-  //    } yield expect(result == Right(1))
-  //  }
+  test(".updateBooking() - update a booking") {
+    val mockRepository = freshRepository
+    val updatedBooking = sampleBooking_1.copy(booking_name = "Updated Booking")
+    for {
+      _ <- mockRepository.setBooking(sampleBooking_1)
+      _ <- mockRepository.setBooking(sampleBooking_2)
+      result <- mockRepository.updateBooking("booking_1", updatedBooking)
+      updatedBooking <- mockRepository.findBookingById("booking_1")
+    } yield
+      expect.all(
+        result == 1, // Assert that update returned 1
+        updatedBooking == updatedBooking // Assert the updated booking matches expected values
+      )
+  }
+
+  // Test case for deleting a booking
+  test("delete a booking") {
+    val mockRepository = freshRepository
+    for {
+      _ <- mockRepository.setBooking(sampleBooking_1)
+      result <- mockRepository.deleteBooking("booking_1")
+      notFoundBooking <- mockRepository.findBookingById("booking_1")
+    } yield
+      expect.all(
+        result == 1, // Assert that delete returned a count for 1 deleted booking
+        notFoundBooking.isEmpty // Assert the booking has been deleted and None is returned
+      )
+  }
 }
