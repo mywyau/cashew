@@ -1,8 +1,8 @@
 package service.users
 
 import cats.effect.IO
-import models.users.Business
-import models.users.errors._
+import models.business.Business
+import models.business.errors.BusinessNotFound
 import repositories.BusinessRepositoryAlgebra
 import services.BusinessServiceImpl
 import weaver.SimpleIOSuite

@@ -1,4 +1,4 @@
-package models.users.errors
+package models.business.errors
 
 sealed trait BusinessValidationError
 

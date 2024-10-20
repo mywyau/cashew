@@ -1,6 +1,6 @@
 package repository.users
 
-import models.users.Business
+import models.business.Business
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime

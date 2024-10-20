@@ -1,7 +1,7 @@
 package repository.users
 
 import cats.effect.IO
-import models.users.Business
+import models.business.Business
 import repositories.BusinessRepositoryAlgebra
 
 class MockBusinessRepository extends BusinessRepositoryAlgebra[IO] {

@@ -1,11 +1,9 @@
-package models.users
+package models.business
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
 import java.time.LocalDateTime
-
-sealed trait User
 
 case class Business(
                      id: Option[Int],
@@ -14,7 +12,7 @@ case class Business(
                      contact_number: String,
                      contact_email: String,
                      created_at: LocalDateTime
-                   ) extends User
+                   )
 
 object Business {
   implicit val businessEncoder: Encoder[Business] = deriveEncoder[Business]
@@ -33,7 +31,7 @@ case class Renter(
                    country: String,
                    postcode: String,
                    created_at: LocalDateTime
-                 ) extends User
+                 )
 
 object Renter {
   implicit val renterEncoder: Encoder[Renter] = deriveEncoder[Renter]
@@ -41,7 +39,7 @@ object Renter {
 }
 
 
-case class Admin(id: Option[Int]) extends User
+case class Admin(id: Option[Int])
 
 object Admin {
   implicit val adminEncoder: Encoder[Admin] = deriveEncoder[Admin]

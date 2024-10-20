@@ -4,8 +4,8 @@ import cats.data.Validated.{Invalid, Valid}
 import cats.data.{EitherT, ValidatedNel}
 import cats.effect.Concurrent
 import cats.implicits._
-import models.users.Business
-import models.users.errors._
+import models.business.Business
+import models.business.errors.{BusinessNotFound, BusinessValidationError, InvalidBusinessId}
 import repositories.BusinessRepositoryAlgebra
 
 

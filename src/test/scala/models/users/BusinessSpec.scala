@@ -4,6 +4,7 @@ import cats.effect.IO
 import io.circe._
 import io.circe.parser._
 import io.circe.syntax.EncoderOps
+import models.business.Business
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime

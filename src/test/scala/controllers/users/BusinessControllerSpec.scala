@@ -3,9 +3,9 @@ package controllers.users
 import cats.effect.{Concurrent, IO}
 import controllers.{BusinessController, BusinessControllerImpl}
 import io.circe.syntax._
-import models.users.Business
-import models.users.errors.BusinessValidationError
-import models.users.responses._
+import models.business.Business
+import models.business.errors.BusinessValidationError
+import models.business.responses.{CreatedBusinessResponse, DeleteBusinessResponse, UpdatedBusinessResponse}
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.implicits.http4sLiteralsSyntax
