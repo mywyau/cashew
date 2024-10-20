@@ -70,6 +70,7 @@ class WorkspaceRepository[F[_]: Concurrent](transactor: Transactor[F]) extends W
     sql"""
       INSERT INTO workspace (
         business_id,
+        workspace_id,
         name,
         description,
         address,
@@ -82,6 +83,7 @@ class WorkspaceRepository[F[_]: Concurrent](transactor: Transactor[F]) extends W
       )
       VALUES (
         ${workspace.business_id},
+        ${workspace.workspace_id},
         ${workspace.name},
         ${workspace.description},
         ${workspace.address},
@@ -101,7 +103,8 @@ class WorkspaceRepository[F[_]: Concurrent](transactor: Transactor[F]) extends W
   def updateWorkspace(workspaceId: String, updatedWorkspace: Workspace): F[Int] =
     sql"""
       UPDATE workspace
-      SET name = ${updatedWorkspace.name},
+      SET workspace_id = ${updatedWorkspace.workspace_id},
+          name = ${updatedWorkspace.name},
           description = ${updatedWorkspace.description},
           address = ${updatedWorkspace.address},
           city = ${updatedWorkspace.city},
@@ -116,7 +119,6 @@ class WorkspaceRepository[F[_]: Concurrent](transactor: Transactor[F]) extends W
       .run
       .transact(transactor)
 
-  // Delete a workspace by its ID
   def deleteWorkspace(workspaceId: String): F[Int] =
     sql"""
       DELETE FROM workspace
