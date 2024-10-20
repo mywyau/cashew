@@ -8,6 +8,7 @@ import java.time.LocalDateTime
 case class Workspace(
                       id: Option[Int],
                       business_id: String,
+                      workspace_id: String,
                       name: String,
                       description: String,
                       address: String,

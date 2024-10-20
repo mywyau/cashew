@@ -10,13 +10,14 @@ import models.workspaces.Workspace
 import java.sql.{Date, Timestamp}
 import java.time.{LocalDate, LocalDateTime}
 
+// Workspace repository algebra defining the interface
 trait WorkspaceRepositoryAlgebra[F[_]] {
 
   def findWorkspaceById(workspaceId: String): F[Option[Workspace]]
 
-  def findWorkspaceByName(workspaceId: String): F[Option[Workspace]]
+  def findWorkspaceByName(workspaceName: String): F[Option[Workspace]]
 
-  def getAllWorkspace: F[List[Workspace]]
+  def getAllWorkspaces: F[List[Workspace]]
 
   def setWorkspace(workspace: Workspace): F[Int]
 
@@ -25,37 +26,47 @@ trait WorkspaceRepositoryAlgebra[F[_]] {
   def deleteWorkspace(workspaceId: String): F[Int]
 }
 
-class WorkspaceRepository[F[_] : Concurrent](transactor: Transactor[F]) extends WorkspaceRepositoryAlgebra[F] {
+// Repository implementation for Workspace
+class WorkspaceRepository[F[_]: Concurrent](transactor: Transactor[F]) extends WorkspaceRepositoryAlgebra[F] {
 
+  // Implicit Meta instances for mapping LocalDateTime and LocalDate to SQL types
   implicit val localDateTimeMeta: Meta[LocalDateTime] =
     Meta[Timestamp].imap(_.toLocalDateTime)(Timestamp.valueOf)
 
   implicit val localDateMeta: Meta[LocalDate] =
     Meta[Date].imap(_.toLocalDate)(Date.valueOf)
 
-  def findWorkspaceById(workspaceId: String): F[Option[Workspace]] = {
-    sql"SELECT * FROM workspace WHERE workspace_id = $workspaceId"
+  // Find a workspace by its ID
+  def findWorkspaceById(workspaceId: String): F[Option[Workspace]] =
+    sql"""
+      SELECT * FROM workspace
+      WHERE workspace_id = $workspaceId
+    """
       .query[Workspace]
       .option
       .transact(transactor)
-  }
 
-  def findWorkspaceByName(workspaceName: String): F[Option[Workspace]] = {
-    sql"SELECT * FROM workspace WHERE name = $workspaceName"
+  // Find a workspace by its name
+  def findWorkspaceByName(workspaceName: String): F[Option[Workspace]] =
+    sql"""
+      SELECT * FROM workspace
+      WHERE name = $workspaceName
+    """
       .query[Workspace]
       .option
       .transact(transactor)
-  }
 
-
-  def getAllWorkspace: F[List[Workspace]] = {
-    sql"SELECT * FROM workspace"
+  // Get all workspaces
+  def getAllWorkspaces: F[List[Workspace]] =
+    sql"""
+      SELECT * FROM workspace
+    """
       .query[Workspace]
       .to[List]
       .transact(transactor)
-  }
 
-  def setWorkspace(workspace: Workspace): F[Int] = {
+  // Insert a new workspace into the database
+  def setWorkspace(workspace: Workspace): F[Int] =
     sql"""
       INSERT INTO workspace (
         business_id,
@@ -81,13 +92,13 @@ class WorkspaceRepository[F[_] : Concurrent](transactor: Transactor[F]) extends 
         ${workspace.latitude},
         ${workspace.longitude}
       )
-    """.update
+    """
+      .update
       .run
       .transact(transactor)
-  }
 
-
-  def updateWorkspace(business_id: String, updatedWorkspace: Workspace): F[Int] = {
+  // Update an existing workspace
+  def updateWorkspace(workspaceId: String, updatedWorkspace: Workspace): F[Int] =
     sql"""
       UPDATE workspace
       SET name = ${updatedWorkspace.name},
@@ -99,19 +110,19 @@ class WorkspaceRepository[F[_] : Concurrent](transactor: Transactor[F]) extends 
           price_per_day = ${updatedWorkspace.price_per_day},
           latitude = ${updatedWorkspace.latitude},
           longitude = ${updatedWorkspace.longitude}
-      WHERE business_id = $business_id
+      WHERE workspace_id = $workspaceId
     """
       .update
       .run
       .transact(transactor)
-  }
 
-  def deleteWorkspace(workspaceId: String): F[Int] = {
+  // Delete a workspace by its ID
+  def deleteWorkspace(workspaceId: String): F[Int] =
     sql"""
-      DELETE FROM workspace WHERE workspace_id = $workspaceId
-    """.update
+      DELETE FROM workspace
+      WHERE workspace_id = $workspaceId
+    """
+      .update
       .run
       .transact(transactor)
-  }
-
 }
