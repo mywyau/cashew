@@ -5,7 +5,8 @@ CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,         -- Unique ID for each user
     username VARCHAR(255) NOT NULL,    -- Name of the user
     password_hash TEXT NOT NULL,   -- Hashed password for security
-    name VARCHAR(255) NOT NULL,    -- Name of the user
+    first_name VARCHAR(255) NOT NULL,    -- Name of the user
+    last_name VARCHAR(255) NOT NULL,    -- Name of the user
     contact_number VARCHAR(100) UNIQUE NOT NULL,  -- Email for login
     email VARCHAR(255) UNIQUE NOT NULL,  -- Email for login
     role VARCHAR(50) DEFAULT 'user',  -- User role ('user', 'business', 'admin')

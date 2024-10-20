@@ -37,6 +37,7 @@ object Main extends IOApp {
       // Apply throttle middleware
       throttleMiddleware(
         Router(
+          "/cashew" -> createAuthRoutes(transactor),
           "/cashew" -> createBookingRoutes(transactor),
           "/cashew" -> createBusinessRoutes(transactor),
           "/cashew" -> createWorkspaceRoutes(transactor),

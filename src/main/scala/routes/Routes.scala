@@ -11,6 +11,15 @@ import services._
 
 object Routes {
 
+  def createAuthRoutes[F[_] : Concurrent : Temporal](transactor: HikariTransactor[F]): HttpRoutes[F] = {
+    // Repositories, services, and controllers setup as before
+    val userRepository = new UserRepository[F](transactor)
+    val authService = new AuthenticationService[F](userRepository)
+    val userController = new UserControllerImpl[F](authService)
+
+    userController.routes
+  }
+
   def createBookingRoutes[F[_] : Concurrent : Temporal](transactor: HikariTransactor[F]): HttpRoutes[F] = {
     // Repositories, services, and controllers setup as before
     val bookingRepository = new BookingRepository[F](transactor)

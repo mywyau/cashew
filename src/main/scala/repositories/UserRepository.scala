@@ -1,6 +1,6 @@
 package repositories
 
-import cats.effect.Sync
+import cats.effect.Concurrent
 import doobie._
 import doobie.implicits._
 import doobie.implicits.javasql._
@@ -17,7 +17,7 @@ trait UserRepositoryAlgebra[F[_]] {
   def findByUsername(username: String): F[Option[User]]
 }
 
-class UserRepository[F[_] : Sync](transactor: Transactor[F]) extends UserRepositoryAlgebra[F] {
+class UserRepository[F[_] : Concurrent](transactor: Transactor[F]) extends UserRepositoryAlgebra[F] {
 
   // Meta instance to map between LocalDateTime and Timestamp
   implicit val localDateTimeMeta: Meta[LocalDateTime] =
@@ -30,10 +30,16 @@ class UserRepository[F[_] : Sync](transactor: Transactor[F]) extends UserReposit
   def createUser(user: User): F[Int] = {
     sql"""
       INSERT INTO users (
-        username, password_hash, name, contact_number, email, role, created_at
+        username, password_hash, first_name, last_name, contact_number, email, role, created_at
       ) VALUES (
-        ${user.username}, ${user.password_hash}, ${user.username},
-        ${user.contact_number}, ${user.email}, ${user.role}, ${user.created_at}
+        ${user.username},
+        ${user.password_hash},
+        ${user.first_name},
+        ${user.last_name},
+        ${user.contact_number},
+        ${user.email},
+        ${user.role},
+        ${user.created_at}
       )
     """.update.run.transact(transactor)
   }
