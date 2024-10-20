@@ -39,7 +39,7 @@ class WorkspaceRepository[F[_]: Concurrent](transactor: Transactor[F]) extends W
   // Find a workspace by its ID
   def findWorkspaceById(workspaceId: String): F[Option[Workspace]] =
     sql"""
-      SELECT * FROM workspace
+      SELECT * FROM workspaces
       WHERE workspace_id = $workspaceId
     """
       .query[Workspace]
@@ -49,7 +49,7 @@ class WorkspaceRepository[F[_]: Concurrent](transactor: Transactor[F]) extends W
   // Find a workspace by its name
   def findWorkspaceByName(workspaceName: String): F[Option[Workspace]] =
     sql"""
-      SELECT * FROM workspace
+      SELECT * FROM workspaces
       WHERE name = $workspaceName
     """
       .query[Workspace]
@@ -59,7 +59,7 @@ class WorkspaceRepository[F[_]: Concurrent](transactor: Transactor[F]) extends W
   // Get all workspaces
   def getAllWorkspaces: F[List[Workspace]] =
     sql"""
-      SELECT * FROM workspace
+      SELECT * FROM workspaces
     """
       .query[Workspace]
       .to[List]
@@ -68,7 +68,7 @@ class WorkspaceRepository[F[_]: Concurrent](transactor: Transactor[F]) extends W
   // Insert a new workspace into the database
   def setWorkspace(workspace: Workspace): F[Int] =
     sql"""
-      INSERT INTO workspace (
+      INSERT INTO workspaces (
         business_id,
         workspace_id,
         name,
@@ -102,7 +102,7 @@ class WorkspaceRepository[F[_]: Concurrent](transactor: Transactor[F]) extends W
   // Update an existing workspace
   def updateWorkspace(workspaceId: String, updatedWorkspace: Workspace): F[Int] =
     sql"""
-      UPDATE workspace
+      UPDATE workspaces
       SET workspace_id = ${updatedWorkspace.workspace_id},
           name = ${updatedWorkspace.name},
           description = ${updatedWorkspace.description},
@@ -121,7 +121,7 @@ class WorkspaceRepository[F[_]: Concurrent](transactor: Transactor[F]) extends W
 
   def deleteWorkspace(workspaceId: String): F[Int] =
     sql"""
-      DELETE FROM workspace
+      DELETE FROM workspaces
       WHERE workspace_id = $workspaceId
     """
       .update

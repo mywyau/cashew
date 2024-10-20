@@ -39,7 +39,8 @@ class WorkspaceServiceImpl[F[_] : Concurrent](repository: WorkspaceRepositoryAlg
     val validation = validateWorkspaceId(workspaceId)
 
     validation match {
-      case Valid(_) => repository.findWorkspaceById(workspaceId).map {
+      case Valid(_) =>
+        repository.findWorkspaceById(workspaceId).map {
         case Some(workspace) =>
           Right(workspace)
         case None =>
