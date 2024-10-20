@@ -1,4 +1,4 @@
-package models.users
+package models.business
 
 import cats.effect.IO
 import io.circe._

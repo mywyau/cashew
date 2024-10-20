@@ -1,4 +1,4 @@
-package repositories
+package repositories.business
 
 import cats.effect.Concurrent
 import doobie._

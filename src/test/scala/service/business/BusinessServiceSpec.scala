@@ -1,9 +1,9 @@
-package service.users
+package service.business
 
 import cats.effect.IO
 import models.business.Business
 import models.business.errors.BusinessNotFound
-import repositories.BusinessRepositoryAlgebra
+import repositories.business.BusinessRepositoryAlgebra
 import services.BusinessServiceImpl
 import weaver.SimpleIOSuite
 

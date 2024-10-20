@@ -5,6 +5,7 @@ import controllers._
 import doobie.hikari.HikariTransactor
 import org.http4s.HttpRoutes
 import repositories._
+import repositories.business.BusinessRepository
 import repositories.workspaces.WorkspaceRepository
 import services._
 

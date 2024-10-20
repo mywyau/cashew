@@ -1,4 +1,4 @@
-package controllers.users
+package controllers.business
 
 import cats.effect.{Concurrent, IO}
 import controllers.{BusinessController, BusinessControllerImpl}
