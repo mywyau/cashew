@@ -15,8 +15,8 @@ object Routes {
 
   def createAuthRoutes[F[_]: Concurrent: Temporal: NonEmptyParallel](transactor: HikariTransactor[F]): HttpRoutes[F] = {
     // Create repositories, services, and controllers as needed
-    val userRepository = new UserRepository[F](transactor)
-    val authService = new AuthenticationService[F](userRepository)
+    val userRepository = new UserRepositoryImpl[F](transactor)
+    val authService = new AuthenticationServiceImpl[F](userRepository)
     val userController = new UserControllerImpl[F](authService)
 
     // Return the routes defined by the user controller

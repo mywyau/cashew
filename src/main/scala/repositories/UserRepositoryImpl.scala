@@ -22,7 +22,7 @@ trait UserRepositoryAlgebra[F[_]] {
   def findByEmail(email: String): F[Option[User]]
 }
 
-class UserRepository[F[_] : Concurrent](transactor: Transactor[F]) extends UserRepositoryAlgebra[F] {
+class UserRepositoryImpl[F[_] : Concurrent](transactor: Transactor[F]) extends UserRepositoryAlgebra[F] {
 
   // Meta instance to map between LocalDateTime and Timestamp
   implicit val localDateTimeMeta: Meta[LocalDateTime] =

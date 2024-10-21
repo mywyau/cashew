@@ -10,7 +10,15 @@ import repositories.UserRepositoryAlgebra
 
 import java.time.LocalDateTime
 
-class AuthenticationService[F[_] : Concurrent : NonEmptyParallel](userRepository: UserRepositoryAlgebra[F]) {
+trait AuthenticationService[F[_]] {
+
+  def registerUser(request: UserRegistrationRequest): F[Validated[List[String], User]]
+
+  def loginUser(request: UserLoginRequest): F[Either[String, User]]
+
+}
+
+class AuthenticationServiceImpl[F[_] : Concurrent : NonEmptyParallel](userRepository: UserRepositoryAlgebra[F]) extends AuthenticationService[F] {
 
   private val UsernameExistsError = "Username already exists"
   private val ContactNumberExistsError = "Contact number already exists"
@@ -36,19 +44,19 @@ class AuthenticationService[F[_] : Concurrent : NonEmptyParallel](userRepository
     val checkUsername: F[ValidatedNel[String, Unit]] =
       userRepository.findByUsername(request.username).map {
         case Some(_) => Validated.invalidNel(UsernameExistsError)
-        case None    => Validated.valid(())
+        case None => Validated.valid(())
       }
 
     val checkContactNumber: F[ValidatedNel[String, Unit]] =
       userRepository.findByContactNumber(request.contact_number).map {
         case Some(_) => Validated.invalidNel(ContactNumberExistsError)
-        case None    => Validated.valid(())
+        case None => Validated.valid(())
       }
 
-   val checkEmail: F[ValidatedNel[String, Unit]] =
+    val checkEmail: F[ValidatedNel[String, Unit]] =
       userRepository.findByEmail(request.email).map {
         case Some(_) => Validated.invalidNel(EmailExistsError)
-        case None    => Validated.valid(())
+        case None => Validated.valid(())
       }
 
     // Run both checks concurrently and combine the results to accumulate any validation errors
@@ -89,5 +97,5 @@ class AuthenticationService[F[_] : Concurrent : NonEmptyParallel](userRepository
 
 object AuthenticationService {
   def apply[F[_] : Concurrent : NonEmptyParallel](userRepository: UserRepositoryAlgebra[F]): AuthenticationService[F] =
-    new AuthenticationService[F](userRepository)
+    new AuthenticationServiceImpl[F](userRepository)
 }
