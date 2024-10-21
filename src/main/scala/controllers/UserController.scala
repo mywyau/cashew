@@ -28,8 +28,11 @@ class UserControllerImpl[F[_] : Concurrent](authService: AuthenticationService[F
     // Register a new user
     case req@POST -> Root / "register" =>
       req.decode[UserRegistrationRequest] { request =>
+        println(request)
         authService.registerUser(request).flatMap {
-          case Right(_) => Created(LoginResponse("User created successfully").asJson)
+          case Right(_) =>
+            println(request)
+            Created(LoginResponse("User created successfully").asJson)
           case _ => InternalServerError(ErrorUserResponse("An error occurred").asJson)
         }
       }

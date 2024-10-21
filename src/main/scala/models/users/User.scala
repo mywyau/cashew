@@ -6,7 +6,6 @@ import io.circe.{Decoder, Encoder}
 import java.time.LocalDateTime
 
 case class User(
-                 id: Option[Int],
                  username: String,
                  password_hash: String,
                  first_name: String,

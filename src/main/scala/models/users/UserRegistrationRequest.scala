@@ -13,6 +13,7 @@ case class UserRegistrationRequest(
                                     email: String
                                   )
 
+
 object UserRegistrationRequest {
   implicit val encoder: Encoder[UserRegistrationRequest] = deriveEncoder[UserRegistrationRequest]
   implicit val decoder: Decoder[UserRegistrationRequest] = deriveDecoder[UserRegistrationRequest]

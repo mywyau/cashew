@@ -16,14 +16,13 @@ class AuthenticationService[F[_] : Concurrent](userRepository: UserRepositoryAlg
 
     val user =
       User(
-        id = None,
         username = request.username,
         password_hash = hashedPassword,
         first_name = request.first_name,
         last_name = request.last_name,
         contact_number = request.contact_number,
         email = request.email,
-        role = request.email,
+        role = request.role,
         created_at = LocalDateTime.now
       )
 
