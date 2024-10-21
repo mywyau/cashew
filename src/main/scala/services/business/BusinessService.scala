@@ -4,9 +4,9 @@ import cats.data.Validated.{Invalid, Valid}
 import cats.data.{EitherT, ValidatedNel}
 import cats.effect.Concurrent
 import cats.implicits._
-import models.users.Business
-import models.users.errors._
-import repositories.BusinessRepositoryAlgebra
+import models.business.Business
+import models.business.errors.{BusinessNotFound, BusinessValidationError, InvalidBusinessId}
+import repositories.business.BusinessRepositoryAlgebra
 
 
 trait BusinessService[F[_]] {
@@ -54,44 +54,12 @@ class BusinessServiceImpl[F[_] : Concurrent](repository: BusinessRepositoryAlgeb
   def createBusiness(business: Business): F[Either[BusinessValidationError, Int]] = {
 
     repository.setBusiness(business).map(Right(_))
-
-//    validation match {
-//      case Valid(_) =>
-//        for {
-//          isOverlapping <- repository.doesOverlap(business)
-//          result <- if (isOverlapping) {
-//            Concurrent[F].pure(Left(OverlappingBusiness))
-//          } else {
-//            repository.setBusiness(business).map(Right(_))
-//          }
-//        } yield result
-//      case Invalid(errors) =>
-//        Concurrent[F].pure(Left(errors.head)) // For simplicity, return the first error
-//    }
   }
 
   // Update business with validation (ensures business exists before updating)
   def updateBusiness(businessId: String, updatedBusiness: Business): F[Either[BusinessValidationError, Int]] = {
 
     repository.updateBusiness(businessId, updatedBusiness).map(Right(_))
-
-//    validation match {
-//      case Valid(_) =>
-//        validateBusinessExists(businessId).value.flatMap {
-//          case Right(_) =>
-//            for {
-//              isOverlapping <- repository.doesOverlap(updatedBusiness)
-//              result <- if (isOverlapping) {
-//                Concurrent[F].pure(Left(OverlappingBusiness))
-//              } else {
-//                repository.updateBusiness(businessId, updatedBusiness).map(Right(_))
-//              }
-//            } yield result
-//          case Left(error) => Concurrent[F].pure(Left(error))
-//        }
-//      case Invalid(errors) =>
-//        Concurrent[F].pure(Left(errors.head)) // Return the first error for simplicity
-//    }
   }
 
   // Delete business with validation (ensures business exists before deleting)

@@ -1,11 +1,11 @@
-package repositories
+package repositories.business
 
 import cats.effect.Concurrent
 import doobie._
 import doobie.implicits._
 import doobie.implicits.javasql._
 import doobie.util.meta.Meta
-import models.users.Business
+import models.business.Business
 
 import java.sql.{Date, Timestamp}
 import java.time.{LocalDate, LocalDateTime}

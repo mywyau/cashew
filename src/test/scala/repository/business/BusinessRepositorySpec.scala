@@ -1,13 +1,13 @@
-package repository.users
+package repository.business
 
-import models.users.Business
+import models.business.Business
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
 
 object BusinessRepositorySpec extends SimpleIOSuite {
 
-  def freshRepository = new repository.users.MockBusinessRepository
+  def freshRepository = new repository.business.MockBusinessRepository
 
   val sampleBusiness_1: Business =
     Business(
@@ -31,7 +31,7 @@ object BusinessRepositorySpec extends SimpleIOSuite {
 
   // Test case for creating a business
   test(".findBusinessById() - find a business by it's business_id") {
-    val mockRepository: repository.users.MockBusinessRepository = freshRepository
+    val mockRepository: repository.business.MockBusinessRepository = freshRepository
     for {
       _ <- mockRepository.setBusiness(sampleBusiness_1)
       _ <- mockRepository.setBusiness(sampleBusiness_2)

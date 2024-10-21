@@ -1,8 +1,8 @@
-package repository.users
+package repository.business
 
 import cats.effect.IO
-import models.users.Business
-import repositories.BusinessRepositoryAlgebra
+import models.business.Business
+import repositories.business.BusinessRepositoryAlgebra
 
 class MockBusinessRepository extends BusinessRepositoryAlgebra[IO] {
 

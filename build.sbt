@@ -17,6 +17,7 @@ lazy val root = (project in file("."))
       "org.tpolecat" %% "doobie-core" % "1.0.0-RC4",
       "org.tpolecat" %% "doobie-hikari" % "1.0.0-RC4",
       "org.tpolecat" %% "doobie-postgres" % "1.0.0-RC4",
+      "com.github.t3hnar" %% "scala-bcrypt" % "4.3.0",
 
       "io.circe" %% "circe-generic" % "0.14.7",
       "io.circe" %% "circe-core" % "0.14.7",
