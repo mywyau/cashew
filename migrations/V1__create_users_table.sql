@@ -7,8 +7,8 @@ CREATE TABLE users (
     password_hash TEXT NOT NULL,   -- Hashed password for security
     first_name VARCHAR(255) NOT NULL,    -- Name of the user
     last_name VARCHAR(255) NOT NULL,    -- Name of the user
-    contact_number VARCHAR(100) UNIQUE NOT NULL,  -- Email for login
-    email VARCHAR(255) UNIQUE NOT NULL,  -- Email for login
+    contact_number VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL,  -- Email for login
     role VARCHAR(50) DEFAULT 'user',  -- User role ('user', 'business', 'admin')
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- Timestamp of account creation
 );

@@ -7,8 +7,8 @@ import doobie.implicits.javasql._
 import doobie.util.meta.Meta
 import models.users.User
 
-import java.sql.{Date, Timestamp}
-import java.time.{LocalDate, LocalDateTime}
+import java.sql.Timestamp
+import java.time.LocalDateTime
 
 
 trait UserRepositoryAlgebra[F[_]] {
@@ -16,6 +16,10 @@ trait UserRepositoryAlgebra[F[_]] {
   def createUser(user: User): F[Int]
 
   def findByUsername(username: String): F[Option[User]]
+
+  def findByContactNumber(contactNumber: String): F[Option[User]]
+
+  def findByEmail(email: String): F[Option[User]]
 }
 
 class UserRepository[F[_] : Concurrent](transactor: Transactor[F]) extends UserRepositoryAlgebra[F] {
@@ -25,13 +29,6 @@ class UserRepository[F[_] : Concurrent](transactor: Transactor[F]) extends UserR
     Meta[Timestamp].imap(_.toLocalDateTime)(Timestamp.valueOf)
 
   def createUser(user: User): F[Int] = {
-    println(user)
-    println(
-      s"""
-        INSERT INTO users (username, password_hash, first_name, last_name, contact_number, email, role, created_at)
-        VALUES (${user.username}, ${user.password_hash}, ${user.first_name}, ${user.last_name}, ${user.contact_number}, ${user.email}, ${user.role}, ${user.created_at})
-      """
-    )
     sql"""
       INSERT INTO users (username, password_hash, first_name, last_name, contact_number, email, role, created_at)
       VALUES (${user.username}, ${user.password_hash}, ${user.first_name}, ${user.last_name}, ${user.contact_number}, ${user.email}, ${user.role}, ${user.created_at})
@@ -46,4 +43,19 @@ class UserRepository[F[_] : Concurrent](transactor: Transactor[F]) extends UserR
       .option
       .transact(transactor)
   }
+
+  def findByContactNumber(contactNumber: String): F[Option[User]] = {
+    sql"SELECT * FROM users WHERE contact_number = $contactNumber"
+      .query[User]
+      .option
+      .transact(transactor)
+  }
+
+  def findByEmail(email: String): F[Option[User]] = {
+    sql"SELECT * FROM users WHERE email = $email"
+      .query[User]
+      .option
+      .transact(transactor)
+  }
+
 }

@@ -1,6 +1,8 @@
 package routes
 
+import cats.NonEmptyParallel
 import cats.effect._
+import cats.syntax.all._
 import controllers._
 import doobie.hikari.HikariTransactor
 import org.http4s.HttpRoutes
@@ -11,12 +13,13 @@ import services._
 
 object Routes {
 
-  def createAuthRoutes[F[_] : Concurrent : Temporal](transactor: HikariTransactor[F]): HttpRoutes[F] = {
-    // Repositories, services, and controllers setup as before
+  def createAuthRoutes[F[_]: Concurrent: Temporal: NonEmptyParallel](transactor: HikariTransactor[F]): HttpRoutes[F] = {
+    // Create repositories, services, and controllers as needed
     val userRepository = new UserRepository[F](transactor)
     val authService = new AuthenticationService[F](userRepository)
     val userController = new UserControllerImpl[F](authService)
 
+    // Return the routes defined by the user controller
     userController.routes
   }
 

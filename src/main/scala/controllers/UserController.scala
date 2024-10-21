@@ -1,5 +1,6 @@
 package controllers
 
+import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Concurrent
 import cats.implicits._
 import io.circe.syntax.EncoderOps
@@ -26,14 +27,13 @@ class UserControllerImpl[F[_] : Concurrent](authService: AuthenticationService[F
 
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
     // Register a new user
-    case req@POST -> Root / "register" =>
+    case req @ POST -> Root / "register" =>
       req.decode[UserRegistrationRequest] { request =>
-        println(request)
         authService.registerUser(request).flatMap {
-          case Right(_) =>
-            println(request)
+          case Valid(user) =>
             Created(LoginResponse("User created successfully").asJson)
-          case _ => InternalServerError(ErrorUserResponse("An error occurred").asJson)
+          case Invalid(errors) =>
+            BadRequest(ErrorUserResponse(errors).asJson)
         }
       }
 
@@ -41,7 +41,7 @@ class UserControllerImpl[F[_] : Concurrent](authService: AuthenticationService[F
       req.decode[UserLoginRequest] { request =>
         authService.loginUser(request).flatMap {
           case Right(_) => Ok(LoginResponse("User created successfully").asJson)
-          case _ => InternalServerError(ErrorUserResponse("Cannot login an error occurred").asJson)
+          case _ => InternalServerError(ErrorUserResponse(List("Cannot login an error occurred")).asJson)
         }
       }
   }

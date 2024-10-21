@@ -1,5 +1,6 @@
 package main
 
+import cats.NonEmptyParallel
 import cats.effect._
 import cats.implicits._
 import com.comcast.ip4s._
@@ -32,7 +33,7 @@ object Main extends IOApp {
       )
     } yield xa
 
-  def createRouterResource[F[_] : Concurrent : Temporal](transactor: HikariTransactor[F]): Resource[F, HttpRoutes[F]] = {
+  def createRouterResource[F[_] : Concurrent : Temporal: NonEmptyParallel](transactor: HikariTransactor[F]): Resource[F, HttpRoutes[F]] = {
     Resource.eval {
       // Apply throttle middleware
       throttleMiddleware(
