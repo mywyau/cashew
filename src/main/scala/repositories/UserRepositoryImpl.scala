@@ -5,7 +5,8 @@ import doobie._
 import doobie.implicits._
 import doobie.implicits.javasql._
 import doobie.util.meta.Meta
-import models.users.User
+import models.bookings.BookingStatus
+import models.users.{Role, User}
 
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -27,6 +28,8 @@ class UserRepositoryImpl[F[_] : Concurrent](transactor: Transactor[F]) extends U
   // Meta instance to map between LocalDateTime and Timestamp
   implicit val localDateTimeMeta: Meta[LocalDateTime] =
     Meta[Timestamp].imap(_.toLocalDateTime)(Timestamp.valueOf)
+
+  implicit val roleMeta: Meta[Role] = Meta[String].imap(Role.fromString)(_.toString)
 
   def createUser(user: User): F[Int] = {
     sql"""

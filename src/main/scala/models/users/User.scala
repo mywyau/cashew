@@ -12,7 +12,7 @@ case class User(
                  last_name: String,
                  contact_number: String,
                  email: String,
-                 role: String,
+                 role: Role,
                  created_at: LocalDateTime
                )
 
@@ -20,3 +20,4 @@ object User {
   implicit val userEncoder: Encoder[User] = deriveEncoder[User]
   implicit val userDecoder: Decoder[User] = deriveDecoder[User]
 }
+

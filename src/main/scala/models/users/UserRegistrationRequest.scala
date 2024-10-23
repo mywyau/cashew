@@ -9,7 +9,7 @@ case class UserRegistrationRequest(
                                     first_name: String,
                                     last_name: String,
                                     contact_number: String,
-                                    role: String,
+                                    role: Role,
                                     email: String
                                   )
 
